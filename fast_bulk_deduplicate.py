@@ -15,18 +15,22 @@ class FragmentWriter:
     def __init__(self, mark = False):
         self.mark = mark
         self.fragment_memory = defaultdict(dict)
-        self.last_start = ('','-1')
+        self.last_chrom = ''
+        self.last_nuc = '-1'
         self.dup_groups_index = 0
 
     def add_fragment(self, chrom, start, end, barcode):
 
-        if chrom < self.last_start[0] or int(start) < int(self.last_start[1]):
+        if chrom < self.last_chrom:
             raise NotSortedError()
-
+        elif chrom == self.last_chrom and int(start) < int(self.last_nuc):
+            raise NotSortedError()
+        
         if len(self.fragment_memory) == 0:
-            self.last_start = (chrom, start)
+            self.last_chrom = chrom
+            self.last_nuc = start
 
-        if (chrom, start) == self.last_start:
+        if (chrom, start) == (self.last_chrom, self.last_nuc):
             location_id = (chrom, start, end)
             #if location / barcode combination not yet recorded, add to memory
             if not barcode in self.fragment_memory[location_id]:
