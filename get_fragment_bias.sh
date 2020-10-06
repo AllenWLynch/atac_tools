@@ -28,5 +28,5 @@ fragment_cutsite_biases=$(paste <(echo "$metadata") <(echo "$bias") | python3 $s
 echo "Predicting fragment duplication rate ..." 1>&2
 other_features=$($scriptspath/get_fragment_features.sh $genome $bedfile)
 
-paste $bedfile <(echo "$fragment_cutsite_biases") <(echo "$other_features") | \
+paste $bedfile <(echo "$fragment_cutsite_biases") <(echo "$other_features") | awk 'NF==9' | \
     python $scriptspath/predict_fragment_level_bias.py -m $fragment_model
