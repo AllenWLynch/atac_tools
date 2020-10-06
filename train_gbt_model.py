@@ -3,7 +3,7 @@ import sklearn
 from sklearn.svm import LinearSVC
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
-from xgboost import XGBRegressor
+from sklearn.ensemble import GradientBoostingRegressor
 import numpy as np
 from sklearn.metrics import accuracy_score
 from joblib import dump
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     features = np.load(args.matrix)
 
     X_train, X_test, y_train, y_test, weights_train, weights_test = \
-        train_test_split(features, weights, targets, test_size = args.test_size, random_state = 1234)
+        train_test_split(features, targets, weights, test_size = args.test_size, random_state = 1234)
 
     if args.num_training_samples > 0:
         X_train, weights_train, y_train = X_train[:args.num_training_samples], weights_train[:args.num_training_samples], y_train[:args.num_training_samples]
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     param_grid = json.loads(args.param_config.read())
 
-    trees_grid = GridSearchCV(XGBRegressor(n_jobs = 1), 
+    trees_grid = GridSearchCV(GradientBoostingRegressor(), 
             param_grid = param_grid, n_jobs = args.cores, scoring = 'neg_mean_squared_error', cv = 10)\
                 .fit(X_train, y_train, sample_weight = weights_train)
 
@@ -68,6 +68,7 @@ if __name__ == "__main__":
     print('Best MSE achieved: {}'.format(str(-1 * trees_grid.best_score_)))
 
     prediction = model.predict(X_test)
+
     score = mean_squared_error(y_test, prediction, sample_weight = weights_test)
 
     print('Validation set MSE: {}'.format(str(score)))
