@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [ $# -ne 5 ]; then
     echo "requires [FASTA] [REGIONS] [CUTSITE-MODEL] [FRAGMENT-MODEL] [SCRIPTS-PATH]"
     exit
